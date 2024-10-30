@@ -26,7 +26,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
             print(f"Error serving {self.path}: {e}")
             self.send_error(404, f"File not found: {self.path}")
 
-def run_server():
+def run_server_local():
     port = 8000
     httpd = HTTPServer(('localhost', port), CORSRequestHandler)
     print(f"Serving at http://localhost:{port}")
@@ -44,6 +44,14 @@ def run_server():
     # Start the server
     httpd.serve_forever()
     stop_thread.join()
+
+def run_server():
+    # Use environment variable for port, default to 8000
+    port = int(os.environ.get('PORT', 8000))
+    # Bind to all interfaces
+    httpd = HTTPServer(('0.0.0.0', port), CORSRequestHandler)
+    print(f"Serving at http://0.0.0.0:{port}")
+    print(f"Current directory: {os.getcwd()}")
 
 if __name__ == '__main__':
     run_server()

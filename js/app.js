@@ -711,6 +711,70 @@ function showDialog(title, message, type = dialogTypes.INFO, buttons = []) {
 
     return mdcDialog;
 }
+
+
+// Add these variables at the top with other let declarations
+let burstInterval;
+let burstCount = 0;
+let countdownOverlay;
+
+// Add new function for burst capture
+function startBurstCapture() {
+    if (capturedPhotos.length >= 8) {
+        showDialog(
+            'Maximum Photos Reached',
+            'Please delete some photos before starting burst capture.',
+            dialogTypes.WARNING
+        );
+        return;
+    }
+
+    // Create countdown overlay if it doesn't exist
+    if (!countdownOverlay) {
+        countdownOverlay = document.createElement('div');
+        countdownOverlay.className = 'countdown-overlay';
+        document.body.appendChild(countdownOverlay);
+    }
+
+    burstCount = 0;
+    startNextBurstPhoto();
+}
+
+function startNextBurstPhoto() {
+    if (burstCount >= 8 || capturedPhotos.length >= 8) {
+        countdownOverlay.style.display = 'none';
+        showSuccess('Burst capture completed!');
+        return;
+    }
+
+    let countdown = 3;
+    countdownOverlay.style.display = 'flex';
+    countdownOverlay.innerHTML = countdown;
+
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+            countdownOverlay.innerHTML = countdown;
+        } else {
+            clearInterval(countdownInterval);
+            // Flash effect
+            countdownOverlay.classList.add('flash');
+            takePicture();
+            burstCount++;
+            
+            // Remove flash effect
+            setTimeout(() => {
+                countdownOverlay.classList.remove('flash');
+                // Start next photo after a short delay
+                setTimeout(() => {
+                    startNextBurstPhoto();
+                }, 500);
+            }, 200);
+        }
+    }, 1000);
+}
+
+
 // Update window.onload to include print button initialization
 window.onload = () => {
     initCamera();
