@@ -54,4 +54,4 @@ def run_server():
     print(f"Current directory: {os.getcwd()}")
 
 if __name__ == '__main__':
-    run_server()
+    run_server_local()
