@@ -2,6 +2,9 @@ let stream;
 let capturedPhotos = [];
 let selectedPhotos = [];
 let selectedTemplate = 0;
+let selectedLayout = '2x2'; // '2x2' or '4x2'
+let selectedBorderColor = 'none'; // Border color for 4x2 layout
+let borderWidth = 4; // Border width in pixels (1-20)
 
 // const templates = [
 //     {
@@ -24,9 +27,10 @@ let selectedTemplate = 0;
 //     }
 // ];
 
-const templates = [
+// Templates for 2x2 layout
+const templates_2x2 = [
     {
-        src: '/assets/images/tmp1.png',
+        src: '/assets/images/2x2/tmp1.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -35,7 +39,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp2.png',
+        src: '/assets/images/2x2/tmp2.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -44,7 +48,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp3.png',
+        src: '/assets/images/2x2/tmp3.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -53,7 +57,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp4.png',
+        src: '/assets/images/2x2/tmp4.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -62,7 +66,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp5.png',
+        src: '/assets/images/2x2/tmp5.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -71,7 +75,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp6.png',
+        src: '/assets/images/2x2/tmp6.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -80,7 +84,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp7.png',
+        src: '/assets/images/2x2/tmp7.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -89,7 +93,7 @@ const templates = [
         ]
     },
     {
-        src: '/assets/images/tmp8.png',
+        src: '/assets/images/2x2/tmp8.png',
         positions: [
             { top: '28%', left: '8%', width: '40%', height: '26%' },
             { top: '28%', right: '7.6%', width: '40%', height: '26%' },
@@ -99,28 +103,221 @@ const templates = [
     }
 ];
 
+// Templates for 4x2 layout
+const templates_4x2 = [
+    {
+        src: '/assets/images/4x2/tmp1.png',
+        positions: [
+            // Left column (4 photos)
+            { top: '5%', left: '13%', width: '35%', height: '23%' },
+            { top: '27%', left: '13%', width: '35%', height: '23%' },
+            { top: '49%', left: '13%', width: '35%', height: '23%' },
+            { top: '71%', left: '13%', width: '35%', height: '23%' },
+            // Right column (copies of left)
+            { top: '5%', right: '13%', width: '35%', height: '23%' },
+            { top: '27%', right: '13%', width: '35%', height: '23%' },
+            { top: '49%', right: '13%', width: '35%', height: '23%' },
+            { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp2.png',
+        positions: [
+           // Left column (4 photos)
+           { top: '5%', left: '13%', width: '35%', height: '23%' },
+           { top: '27%', left: '13%', width: '35%', height: '23%' },
+           { top: '49%', left: '13%', width: '35%', height: '23%' },
+           { top: '71%', left: '13%', width: '35%', height: '23%' },
+           // Right column (copies of left)
+           { top: '5%', right: '13%', width: '35%', height: '23%' },
+           { top: '27%', right: '13%', width: '35%', height: '23%' },
+           { top: '49%', right: '13%', width: '35%', height: '23%' },
+           { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp3.png',
+        positions: [
+           // Left column (4 photos)
+           { top: '5%', left: '13%', width: '35%', height: '23%' },
+           { top: '27%', left: '13%', width: '35%', height: '23%' },
+           { top: '49%', left: '13%', width: '35%', height: '23%' },
+           { top: '71%', left: '13%', width: '35%', height: '23%' },
+           // Right column (copies of left)
+           { top: '5%', right: '13%', width: '35%', height: '23%' },
+           { top: '27%', right: '13%', width: '35%', height: '23%' },
+           { top: '49%', right: '13%', width: '35%', height: '23%' },
+           { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp4.png',
+        positions: [
+            { top: '14%', left: '8%', width: '40%', height: '16%' },
+            { top: '32%', left: '8%', width: '40%', height: '16%' },
+            { top: '50%', left: '8%', width: '40%', height: '16%' },
+            { top: '68%', left: '8%', width: '40%', height: '16%' },
+            { top: '14%', right: '7.6%', width: '40%', height: '16%' },
+            { top: '32%', right: '7.6%', width: '40%', height: '16%' },
+            { top: '50%', right: '7.6%', width: '40%', height: '16%' },
+            { top: '68%', right: '7.6%', width: '40%', height: '16%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp5.png',
+        positions: [
+           // Left column (4 photos)
+           { top: '5%', left: '13%', width: '35%', height: '23%' },
+           { top: '27%', left: '13%', width: '35%', height: '23%' },
+           { top: '49%', left: '13%', width: '35%', height: '23%' },
+           { top: '71%', left: '13%', width: '35%', height: '23%' },
+           // Right column (copies of left)
+           { top: '5%', right: '13%', width: '35%', height: '23%' },
+           { top: '27%', right: '13%', width: '35%', height: '23%' },
+           { top: '49%', right: '13%', width: '35%', height: '23%' },
+           { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp6.png',
+        positions: [
+           // Left column (4 photos)
+           { top: '5%', left: '13%', width: '35%', height: '23%' },
+           { top: '27%', left: '13%', width: '35%', height: '23%' },
+           { top: '49%', left: '13%', width: '35%', height: '23%' },
+           { top: '71%', left: '13%', width: '35%', height: '23%' },
+           // Right column (copies of left)
+           { top: '5%', right: '13%', width: '35%', height: '23%' },
+           { top: '27%', right: '13%', width: '35%', height: '23%' },
+           { top: '49%', right: '13%', width: '35%', height: '23%' },
+           { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp7.png',
+        positions: [
+            { top: '14%', left: '8%', width: '40%', height: '16%' },
+           { top: '27%', left: '13%', width: '35%', height: '23%' },
+           { top: '49%', left: '13%', width: '35%', height: '23%' },
+           { top: '71%', left: '13%', width: '35%', height: '23%' },
+           // Right column (copies of left)
+           { top: '5%', right: '13%', width: '35%', height: '23%' },
+           { top: '27%', right: '13%', width: '35%', height: '23%' },
+           { top: '49%', right: '13%', width: '35%', height: '23%' },
+           { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    },
+    {
+        src: '/assets/images/4x2/tmp8.png',
+        positions: [
+             // Left column (4 photos)
+             { top: '5%', left: '13%', width: '35%', height: '23%' },
+             { top: '27%', left: '13%', width: '35%', height: '23%' },
+             { top: '49%', left: '13%', width: '35%', height: '23%' },
+             { top: '71%', left: '13%', width: '35%', height: '23%' },
+             // Right column (copies of left)
+             { top: '5%', right: '13%', width: '35%', height: '23%' },
+             { top: '27%', right: '13%', width: '35%', height: '23%' },
+             { top: '49%', right: '13%', width: '35%', height: '23%' },
+             { top: '71%', right: '13%', width: '35%', height: '23%' }
+        ]
+    }
+];
 
-// Add this function to load and convert images
-function loadTemplateImages() {
-    const templateFiles = ['tmp1.png', 'tmp2.png'];
+// Get current templates array based on layout
+function getTemplates() {
+    return selectedLayout === '4x2' ? templates_4x2 : templates_2x2;
+}
+
+// Get positions based on current layout
+function getPositions(templateIndex) {
+    const templates = getTemplates();
+    return templates[templateIndex].positions;
+}
+
+// Select layout function
+function selectLayout(layout) {
+    selectedLayout = layout;
     
-    templateFiles.forEach((file, index) => {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            templates[index].src = canvas.toDataURL('image/png');
-            
-            // Update template preview
-            const templateEl = document.querySelectorAll('.template')[index];
+    // Update button styles
+    document.querySelectorAll('.layout-btn').forEach(btn => {
+        btn.classList.remove('selected', 'mdc-button--raised');
+        btn.classList.add('mdc-button--outlined');
+    });
+    
+    const selectedBtn = document.getElementById(`layout-${layout}`);
+    selectedBtn.classList.add('selected', 'mdc-button--raised');
+    selectedBtn.classList.remove('mdc-button--outlined');
+    
+    // Show/hide border selector based on layout
+    const borderSelector = document.getElementById('border-selector');
+    const widthControl = document.getElementById('border-width-control');
+    if (layout === '4x2') {
+        borderSelector.style.display = 'block';
+    } else {
+        borderSelector.style.display = 'none';
+        widthControl.style.display = 'none';
+        selectedBorderColor = 'none'; // Reset border when switching to 2x2
+        borderWidth = 4; // Reset border width
+    }
+    
+    // Reset template selection when layout changes
+    selectedTemplate = 0;
+    
+    // Update template previews for new layout
+    updateTemplatePreviews();
+    
+    // Update final template with new layout
+    updateFinalTemplate();
+}
+
+// Select border color function (only for 4x2 layout)
+function selectBorderColor(color) {
+    selectedBorderColor = color;
+    
+    // Update UI
+    document.querySelectorAll('.border-color-option').forEach(option => {
+        option.classList.toggle('selected', option.dataset.color === color);
+    });
+    
+    // Show/hide border width slider
+    const widthControl = document.getElementById('border-width-control');
+    if (color !== 'none') {
+        widthControl.style.display = 'block';
+    } else {
+        widthControl.style.display = 'none';
+    }
+    
+    // Update final template with new border
+    updateFinalTemplate();
+}
+
+// Update border width function
+function updateBorderWidth(value) {
+    borderWidth = parseInt(value);
+    document.getElementById('border-width-value').textContent = value;
+    
+    // Update final template with new border width
+    updateFinalTemplate();
+}
+
+// Update template preview images based on current layout
+function updateTemplatePreviews() {
+    const templates = getTemplates();
+    const templateElements = document.querySelectorAll('.template');
+    
+    templateElements.forEach((templateEl, index) => {
+        if (index < templates.length) {
             templateEl.style.backgroundImage = `url('${templates[index].src}')`;
-        };
-        img.src = file;
+            templateEl.style.display = 'block';
+            templateEl.classList.toggle('selected', index === selectedTemplate);
+        } else {
+            templateEl.style.display = 'none';
+        }
     });
 }
+
+
 
 async function initCamera() {
     try {
@@ -232,6 +429,23 @@ function selectTemplate(index) {
     updateFinalTemplate();
 }
 
+// Initialize template elements in the DOM
+function initializeTemplates() {
+    const container = document.getElementById('templates-container');
+    container.innerHTML = '';
+    
+    // Create 8 template slots (max templates per layout)
+    for (let i = 0; i < 8; i++) {
+        const templateDiv = document.createElement('div');
+        templateDiv.className = 'template';
+        templateDiv.onclick = () => selectTemplate(i);
+        container.appendChild(templateDiv);
+    }
+    
+    // Update with current layout's templates
+    updateTemplatePreviews();
+}
+
 // function updateFinalTemplate() {
 //     if (selectedPhotos.length === 4) {
 //         const container = document.querySelector('.final-template');
@@ -261,27 +475,59 @@ function updateFinalTemplate() {
         const container = document.querySelector('.final-template');
         container.innerHTML = '';
         
+        // Get current templates based on layout
+        const templates = getTemplates();
+        
         // Add template background
         const templateImg = document.createElement('img');
         templateImg.src = templates[selectedTemplate].src;
         templateImg.className = 'template-background';
         container.appendChild(templateImg);
         
-        // Add photos in their positions
-        selectedPhotos.forEach((photoIndex, i) => {
-            const photoDiv = document.createElement('div');
-            photoDiv.className = 'photo-slot';
-            
-            // Apply positioning from template
-            const position = templates[selectedTemplate].positions[i];
-            Object.assign(photoDiv.style, position);
-            
-            const img = document.createElement('img');
-            img.src = capturedPhotos[photoIndex];
-            img.style.objectFit = 'cover';
-            photoDiv.appendChild(img);
-            container.appendChild(photoDiv);
-        });
+        // Get positions based on current layout
+        const positions = getPositions(selectedTemplate);
+        
+        if (selectedLayout === '2x2') {
+            // 2x2 layout: 4 photos in 4 positions
+            selectedPhotos.forEach((photoIndex, i) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-slot';
+                
+                const position = positions[i];
+                Object.assign(photoDiv.style, position);
+                
+                const img = document.createElement('img');
+                img.src = capturedPhotos[photoIndex];
+                img.style.objectFit = 'cover';
+                photoDiv.appendChild(img);
+                container.appendChild(photoDiv);
+            });
+        } else {
+            // 4x2 layout: 8 positions, right side is copy of left side
+            // Positions 0-3 are left column, positions 4-7 are right column
+            positions.forEach((position, i) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-slot';
+                
+                Object.assign(photoDiv.style, position);
+                
+                // Apply border if selected (only for 4x2)
+                if (selectedBorderColor !== 'none') {
+                    photoDiv.style.border = `${borderWidth}px solid ${selectedBorderColor}`;
+                    photoDiv.style.boxSizing = 'border-box';
+                }
+                
+                // For right column (positions 4-7), use same photos as left column (0-3)
+                const photoArrayIndex = i < 4 ? i : i - 4;
+                const photoIndex = selectedPhotos[photoArrayIndex];
+                
+                const img = document.createElement('img');
+                img.src = capturedPhotos[photoIndex];
+                img.style.objectFit = 'cover';
+                photoDiv.appendChild(img);
+                container.appendChild(photoDiv);
+            });
+        }
     }
 }
 
@@ -343,7 +589,6 @@ function updateFinalTemplate() {
 
 function exportImagev2() {
     if (selectedPhotos.length !== 4) {
-        // alert('Please select 4 photos first!');
         showDialog(
             'Selection Required',
             'Please select exactly 4 photos before exporting.',
@@ -396,6 +641,9 @@ function exportImagev2() {
     canvas.width = 1080;
     canvas.height = 1080;
 
+    // Get current templates based on layout
+    const templates = getTemplates();
+    
     // Load template image
     const templateImg = new Image();
     templateImg.crossOrigin = 'anonymous';
@@ -405,15 +653,40 @@ function exportImagev2() {
         // Draw template
         ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-        // Load and draw all selected photos
-        const photoPromises = selectedPhotos.map((photoIndex, i) => {
+        // Get positions based on current layout
+        const positions = getPositions(selectedTemplate);
+        
+        // Build array of photos to draw based on layout
+        let photosToDrawWithPositions = [];
+        
+        if (selectedLayout === '2x2') {
+            // 2x2: draw 4 photos in 4 positions
+            selectedPhotos.forEach((photoIndex, i) => {
+                photosToDrawWithPositions.push({
+                    photoIndex: photoIndex,
+                    position: positions[i]
+                });
+            });
+        } else {
+            // 4x2: draw 8 photos (right side copies left side)
+            positions.forEach((position, i) => {
+                const photoArrayIndex = i < 4 ? i : i - 4;
+                photosToDrawWithPositions.push({
+                    photoIndex: selectedPhotos[photoArrayIndex],
+                    position: position
+                });
+            });
+        }
+
+        // Load and draw all photos
+        const photoPromises = photosToDrawWithPositions.map(({ photoIndex, position }) => {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.src = capturedPhotos[photoIndex];
 
                 img.onload = () => {
-                    const pos = templates[selectedTemplate].positions[i];
+                    const pos = position;
                     const x = pos.left ? (parseFloat(pos.left) / 100 * canvas.width) 
                                     : (canvas.width - (parseFloat(pos.right) / 100 * canvas.width) - (parseFloat(pos.width) / 100 * canvas.width));
                     const y = pos.top ? (parseFloat(pos.top) / 100 * canvas.height)
@@ -422,6 +695,14 @@ function exportImagev2() {
                     const h = parseFloat(pos.height) / 100 * canvas.height;
 
                     ctx.drawImage(img, x, y, w, h);
+                    
+                    // Draw border if selected (only for 4x2 layout)
+                    if (selectedLayout === '4x2' && selectedBorderColor !== 'none') {
+                        ctx.strokeStyle = selectedBorderColor;
+                        ctx.lineWidth = borderWidth * 2; // Scale border width for export resolution
+                        ctx.strokeRect(x, y, w, h);
+                    }
+                    
                     resolve();
                 };
                 img.onerror = reject;
@@ -558,12 +839,35 @@ function resetAll() {
                     capturedPhotos = [];
                     selectedPhotos = [];
                     selectedTemplate = 0;
+                    selectedLayout = '2x2';
+                    selectedBorderColor = 'none';
+                    borderWidth = 4;
                     
                     updateCapturedPhotosGrid();
-                    document.querySelectorAll('.template').forEach((template, i) => {
-                        template.classList.toggle('selected', i === 0);
-                    });
                     document.querySelector('.final-template').innerHTML = '';
+                    
+                    // Reset layout buttons
+                    document.querySelectorAll('.layout-btn').forEach(btn => {
+                        btn.classList.remove('selected', 'mdc-button--raised');
+                        btn.classList.add('mdc-button--outlined');
+                    });
+                    const btn2x2 = document.getElementById('layout-2x2');
+                    btn2x2.classList.add('selected', 'mdc-button--raised');
+                    btn2x2.classList.remove('mdc-button--outlined');
+                    
+                    // Hide border selector and reset selection
+                    document.getElementById('border-selector').style.display = 'none';
+                    document.querySelectorAll('.border-color-option').forEach(option => {
+                        option.classList.toggle('selected', option.dataset.color === 'none');
+                    });
+                    
+                    // Reset border width slider
+                    document.getElementById('border-width-control').style.display = 'none';
+                    document.getElementById('border-width-slider').value = 4;
+                    document.getElementById('border-width-value').textContent = '4';
+                    
+                    // Reset template previews
+                    updateTemplatePreviews();
                     
                     showSuccess('All content has been reset!');
                 }
@@ -779,7 +1083,7 @@ function startNextBurstPhoto() {
 window.onload = () => {
     initCamera();
     initializeNotifications();
-    loadTemplateImages();
+    initializeTemplates();
     document.querySelectorAll('.mdc-button').forEach(button => {
         new mdc.ripple.MDCRipple(button);
     });

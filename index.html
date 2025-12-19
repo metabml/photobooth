@@ -55,16 +55,52 @@
             </button>
         </div>
 
+        <h3>Choose Layout:</h3>
+        <div class="layout-selector">
+            <button class="mdc-button mdc-button--raised layout-btn selected" onclick="selectLayout('2x2')" id="layout-2x2">
+                <span class="mdc-button__ripple"></span>
+                <i class="material-icons mdc-button__icon">grid_view</i>
+                <span class="mdc-button__label">2x2 (4 tiles)</span>
+            </button>
+            <button class="mdc-button mdc-button--outlined layout-btn" onclick="selectLayout('4x2')" id="layout-4x2">
+                <span class="mdc-button__ripple"></span>
+                <i class="material-icons mdc-button__icon">view_module</i>
+                <span class="mdc-button__label">4x2 (8 tiles)</span>
+            </button>
+        </div>
+
+        <!-- Border color selector (only for 4x2 layout) -->
+        <div class="border-selector" id="border-selector" style="display: none;">
+            <h3>Choose Border Color:</h3>
+            <div class="border-colors">
+                <div class="border-color-option selected" data-color="none" onclick="selectBorderColor('none')" title="No Border">
+                    <span class="no-border-icon">&times;</span>
+                </div>
+                <div class="border-color-option" data-color="#ffffff" onclick="selectBorderColor('#ffffff')" style="background-color: #ffffff;" title="White"></div>
+                <div class="border-color-option" data-color="#000000" onclick="selectBorderColor('#000000')" style="background-color: #000000;" title="Black"></div>
+                <div class="border-color-option" data-color="#FFD700" onclick="selectBorderColor('#FFD700')" style="background-color: #FFD700;" title="Gold"></div>
+                <div class="border-color-option" data-color="#C0C0C0" onclick="selectBorderColor('#C0C0C0')" style="background-color: #C0C0C0;" title="Silver"></div>
+                <div class="border-color-option" data-color="#ff0000" onclick="selectBorderColor('#ff0000')" style="background-color: #ff0000;" title="Red"></div>
+                <div class="border-color-option" data-color="#00ff00" onclick="selectBorderColor('#00ff00')" style="background-color: #00ff00;" title="Green"></div>
+                <div class="border-color-option" data-color="#0000ff" onclick="selectBorderColor('#0000ff')" style="background-color: #0000ff;" title="Blue"></div>
+                <div class="border-color-option" data-color="#ff69b4" onclick="selectBorderColor('#ff69b4')" style="background-color: #ff69b4;" title="Pink"></div>
+                <div class="border-color-option" data-color="#800080" onclick="selectBorderColor('#800080')" style="background-color: #800080;" title="Purple"></div>
+            </div>
+            
+            <!-- Border width slider -->
+            <div class="border-width-control" id="border-width-control" style="display: none;">
+                <label for="border-width-slider">Border Width: <span id="border-width-value">4</span>px</label>
+                <div class="slider-container">
+                    <span class="slider-label">Thin</span>
+                    <input type="range" id="border-width-slider" min="1" max="20" value="4" oninput="updateBorderWidth(this.value)">
+                    <span class="slider-label">Thick</span>
+                </div>
+            </div>
+        </div>
+
         <h3>Choose Template:</h3>
-        <div class="templates">
-            <div class="template" onclick="selectTemplate(0)" style="background-image: url('/assets/images/tmp1.png')"></div>
-            <div class="template" onclick="selectTemplate(1)" style="background-image: url('/assets/images/tmp2.png')"></div>
-            <div class="template" onclick="selectTemplate(2)" style="background-image: url('/assets/images/tmp3.png')"></div>
-            <div class="template" onclick="selectTemplate(3)" style="background-image: url('/assets/images/tmp4.png')"></div>
-            <div class="template" onclick="selectTemplate(4)" style="background-image: url('/assets/images/tmp5.png')"></div>
-            <div class="template" onclick="selectTemplate(5)" style="background-image: url('/assets/images/tmp6.png')"></div>
-            <div class="template" onclick="selectTemplate(6)" style="background-image: url('/assets/images/tmp7.png')"></div>
-            <div class="template" onclick="selectTemplate(7)" style="background-image: url('/assets/images/tmp8.png')"></div>
+        <div class="templates" id="templates-container">
+            <!-- Templates will be populated dynamically based on layout -->
         </div>
 
         <h3>Captured Photos:</h3>
