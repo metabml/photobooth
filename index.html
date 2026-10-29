@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="halloween-2026">
 <head>
-    <title>Photo Booth: Innovamed x Alliance</title>
-    <!-- Material Design CDN -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Booth Studio | Innovamed x Alliance</title>
+    <!-- Material Design & Google Fonts -->
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
@@ -16,115 +19,799 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
     <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
-    <meta name="theme-color" content="#931f1d">
+    <meta name="theme-color" content="#ff6b00" id="meta-theme-color">
 </head>
 <body>
-    <div class="container">
-        <div class="camera-container">
-            <video id="camera-feed" autoplay></video>
-        </div>
+    <!-- Ambient Theme Icons Layer -->
+    <div class="ambient-bg" id="ambient-bg" aria-hidden="true"></div>
 
-        <div class="controls">
-            <button class="mdc-button mdc-button--raised" onclick="takePicture()">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">camera</i>
-                <span class="mdc-button__label">Take Picture</span>
-            </button>
-
-            <button class="mdc-button mdc-button--raised" onclick="startBurstCapture()">
-                <span class="mdc-button__ripple"></span>
-                <span class="mdc-button__label">Burst Capture (3 seconds)</span>
-            </button>
-            
-            <button class="mdc-button mdc-button--raised" onclick="exportImage()">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">download</i>
-                <span class="mdc-button__label">Export Image</span>
-            </button>
-
-            <!-- <button class="mdc-button mdc-button--raised" onclick="printTemplate()">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">print</i>
-                <span class="mdc-button__label">Print</span>
-            </button> -->
-
-            <button class="mdc-button mdc-button--outlined" onclick="resetAll()">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">refresh</i>
-                <span class="mdc-button__label">Reset</span>
-            </button>
-        </div>
-
-        <h3>Choose Layout:</h3>
-        <div class="layout-selector">
-            <button class="mdc-button mdc-button--raised layout-btn selected" onclick="selectLayout('2x2')" id="layout-2x2">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">grid_view</i>
-                <span class="mdc-button__label">2x2 (4 tiles)</span>
-            </button>
-            <button class="mdc-button mdc-button--outlined layout-btn" onclick="selectLayout('4x2')" id="layout-4x2">
-                <span class="mdc-button__ripple"></span>
-                <i class="material-icons mdc-button__icon">view_module</i>
-                <span class="mdc-button__label">4x2 (8 tiles)</span>
-            </button>
-        </div>
-
-        <!-- Border color selector (only for 4x2 layout) -->
-        <div class="border-selector" id="border-selector" style="display: none;">
-            <h3>Choose Border Color:</h3>
-            <div class="border-colors">
-                <div class="border-color-option selected" data-color="none" onclick="selectBorderColor('none')" title="No Border">
-                    <span class="no-border-icon">&times;</span>
+    <!-- Top Navigation & Theme / Guest Bar -->
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand-area">
+                <div class="brand-icon" id="brand-theme-icon">
+                    <i class="material-icons-outlined">nights_stay</i>
                 </div>
-                <div class="border-color-option" data-color="#ffffff" onclick="selectBorderColor('#ffffff')" style="background-color: #ffffff;" title="White"></div>
-                <div class="border-color-option" data-color="#000000" onclick="selectBorderColor('#000000')" style="background-color: #000000;" title="Black"></div>
-                <div class="border-color-option" data-color="#FFD700" onclick="selectBorderColor('#FFD700')" style="background-color: #FFD700;" title="Gold"></div>
-                <div class="border-color-option" data-color="#C0C0C0" onclick="selectBorderColor('#C0C0C0')" style="background-color: #C0C0C0;" title="Silver"></div>
-                <div class="border-color-option" data-color="#ff0000" onclick="selectBorderColor('#ff0000')" style="background-color: #ff0000;" title="Red"></div>
-                <div class="border-color-option" data-color="#00ff00" onclick="selectBorderColor('#00ff00')" style="background-color: #00ff00;" title="Green"></div>
-                <div class="border-color-option" data-color="#0000ff" onclick="selectBorderColor('#0000ff')" style="background-color: #0000ff;" title="Blue"></div>
-                <div class="border-color-option" data-color="#ff69b4" onclick="selectBorderColor('#ff69b4')" style="background-color: #ff69b4;" title="Pink"></div>
-                <div class="border-color-option" data-color="#800080" onclick="selectBorderColor('#800080')" style="background-color: #800080;" title="Purple"></div>
-            </div>
-            
-            <!-- Border width slider -->
-            <div class="border-width-control" id="border-width-control" style="display: none;">
-                <label for="border-width-slider">Border Width: <span id="border-width-value">4</span>px</label>
-                <div class="slider-container">
-                    <span class="slider-label">Thin</span>
-                    <input type="range" id="border-width-slider" min="1" max="20" value="4" oninput="updateBorderWidth(this.value)">
-                    <span class="slider-label">Thick</span>
+                <div class="brand-text">
+                    <h1>Photo Booth Studio</h1>
+                    <span class="brand-subtitle">Innovamed &times; Alliance Care</span>
                 </div>
             </div>
+
+            <!-- Quick Theme Switcher (Icons Only, No Emojis) -->
+            <div class="theme-switcher-bar" role="group" aria-label="Theme Switcher">
+                <span class="bar-label"><i class="material-icons-outlined">palette</i> Theme:</span>
+                <button type="button" class="theme-chip active" data-theme="halloween-2026" onclick="setAppTheme('halloween-2026')">
+                    <i class="material-icons-outlined">nights_stay</i>
+                    <span>Halloween</span>
+                </button>
+                <button type="button" class="theme-chip" data-theme="christmas" onclick="setAppTheme('christmas')">
+                    <i class="material-icons-outlined">ac_unit</i>
+                    <span>Christmas</span>
+                </button>
+                <button type="button" class="theme-chip" data-theme="classic-halloween" onclick="setAppTheme('classic-halloween')">
+                    <i class="material-icons-outlined">dark_mode</i>
+                    <span>Spooky Classic</span>
+                </button>
+                <button type="button" class="theme-chip" data-theme="corporate" onclick="setAppTheme('corporate')">
+                    <i class="material-icons-outlined">workspace_premium</i>
+                    <span>Studio Pro</span>
+                </button>
+                <button type="button" class="theme-chip" data-theme="neon" onclick="setAppTheme('neon')">
+                    <i class="material-icons-outlined">bolt</i>
+                    <span>Neon Party</span>
+                </button>
+                <div class="custom-bg-picker-wrapper" title="Custom Background Color">
+                    <label for="custom-bg-color" class="custom-bg-label">
+                        <i class="material-icons-outlined">colorize</i>
+                    </label>
+                    <input type="color" id="custom-bg-color" value="#2b1055" onchange="applyCustomBgColor(this.value)">
+                </div>
+            </div>
+
+            <!-- Visitor / Guest Session & Shortcuts Controls -->
+            <div class="guest-bar">
+                <button type="button" class="guest-badge-btn" onclick="openGuestModal()" title="Set Visitor Name or Switch Guest">
+                    <i class="material-icons-outlined">person</i>
+                    <div class="guest-badge-text">
+                        <span class="guest-label">Visitor</span>
+                        <strong id="current-guest-name">Guest Visitor</strong>
+                    </div>
+                    <i class="material-icons-outlined edit-icon">edit</i>
+                </button>
+                <button type="button" class="icon-action-btn" onclick="startNewGuestSession()" title="Start New Guest Session">
+                    <i class="material-icons-outlined">person_add</i>
+                    <span>New Guest</span>
+                </button>
+                <button type="button" class="icon-action-btn" onclick="toggleHistoryDrawer()" title="Recent Guest Photos">
+                    <i class="material-icons-outlined">photo_library</i>
+                    <span class="badge-count" id="history-count-badge">0</span>
+                </button>
+                <button type="button" class="icon-action-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts (?)">
+                    <i class="material-icons-outlined">keyboard</i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Guided Process Stepper & Smart Prompt Banner -->
+    <nav class="process-nav" aria-label="Photo Booth Steps">
+        <div class="process-nav-inner">
+            <div class="stepper-tabs">
+                <button type="button" class="step-tab active" id="step-tab-1" onclick="goToStep(1)" title="Shortcut: Key 1">
+                    <span class="step-num">1</span>
+                    <div class="step-info">
+                        <span class="step-title">Layout &amp; Frame</span>
+                        <span class="step-desc" id="step-1-summary">2x2 &bull; Frame 1</span>
+                    </div>
+                </button>
+                <div class="step-connector"></div>
+                <button type="button" class="step-tab" id="step-tab-2" onclick="goToStep(2)" title="Shortcut: Key 2">
+                    <span class="step-num">2</span>
+                    <div class="step-info">
+                        <span class="step-title">Snap Photos</span>
+                        <span class="step-desc" id="step-2-summary">0 / 8 captured</span>
+                    </div>
+                </button>
+                <div class="step-connector"></div>
+                <button type="button" class="step-tab" id="step-tab-3" onclick="goToStep(3)" title="Shortcut: Key 3">
+                    <span class="step-num">3</span>
+                    <div class="step-info">
+                        <span class="step-title">Select &amp; Style</span>
+                        <span class="step-desc" id="step-3-summary">0 / 4 selected</span>
+                    </div>
+                </button>
+                <div class="step-connector"></div>
+                <button type="button" class="step-tab" id="step-tab-4" onclick="goToStep(4)" title="Shortcut: Key 4">
+                    <span class="step-num">4</span>
+                    <div class="step-info">
+                        <span class="step-title">Preview &amp; Download</span>
+                        <span class="step-desc" id="step-4-summary">Ready when picked</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Smart Contextual Prompt Bar -->
+            <div class="smart-prompt-banner" id="smart-prompt-banner">
+                <div class="prompt-left">
+                    <i class="material-icons-outlined" id="prompt-icon">tips_and_updates</i>
+                    <span id="prompt-message">Welcome! Choose your theme, layout, and favorite template frame to get started.</span>
+                </div>
+                <div class="prompt-actions">
+                    <button type="button" class="btn-secondary btn-sm" id="prompt-prev-btn" onclick="prevStep()" style="display: none;" title="Keyboard shortcut: Left Arrow">
+                        <i class="material-icons-outlined">arrow_back</i>
+                        <span>Back</span>
+                        <kbd class="kbd-hint">&larr;</kbd>
+                    </button>
+                    <button type="button" class="btn-primary btn-sm" id="prompt-next-btn" onclick="nextStep()" title="Keyboard shortcut: Right Arrow or Enter">
+                        <span id="prompt-next-label">Next: Snap Photos</span>
+                        <kbd class="kbd-hint">&rarr;</kbd>
+                        <i class="material-icons-outlined">arrow_forward</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Studio Workspace -->
+    <main class="studio-workspace">
+        <!-- Left / Primary Step Content Column -->
+        <div class="studio-main-col">
+
+            <!-- ==================== STEP 1: LAYOUT & TEMPLATE ==================== -->
+            <section class="step-panel active" id="step-panel-1">
+                <div class="panel-card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="material-icons-outlined">grid_view</i> 1. Choose Photo Layout</h2>
+                            <p class="card-subtitle">Select a single 1&times;1 portrait, a 2&times;2 4-photo grid, a 4&times;2 duplicated twin strip, or a 4&times;2 unique 8-photo grid.</p>
+                        </div>
+                    </div>
+
+                    <div class="layout-cards-grid">
+                        <!-- 1x1 Single Grid -->
+                        <button type="button" class="layout-card" id="layout-1x1" onclick="selectLayout('1x1')">
+                            <div class="layout-diagram diagram-1x1">
+                                <span></span>
+                            </div>
+                            <div class="layout-card-body">
+                                <strong>1&times;1 Single Grid (1 Tile)</strong>
+                                <span>1 large featured photo in a single frame</span>
+                            </div>
+                            <i class="material-icons check-badge">check_circle</i>
+                        </button>
+
+                        <!-- 2x2 Grid (4 Tiles) -->
+                        <button type="button" class="layout-card selected" id="layout-2x2" onclick="selectLayout('2x2')">
+                            <div class="layout-diagram diagram-2x2">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                            <div class="layout-card-body">
+                                <strong>2&times;2 Grid (4 Tiles)</strong>
+                                <span>4 distinct photos in a classic square grid</span>
+                            </div>
+                            <i class="material-icons check-badge">check_circle</i>
+                        </button>
+
+                        <!-- 4x2 Twin Strip (4 Poses Duplicated) -->
+                        <button type="button" class="layout-card" id="layout-4x2" onclick="selectLayout('4x2')">
+                            <div class="layout-diagram diagram-4x2">
+                                <span></span><span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                            <div class="layout-card-body">
+                                <strong>4&times;2 Twin Strip (Duplicated)</strong>
+                                <span>4 poses duplicated side-by-side in twin columns</span>
+                            </div>
+                            <i class="material-icons check-badge">check_circle</i>
+                        </button>
+
+                        <!-- 4x2 Unique Grid (8 Distinct Tiles - Not Duplicated) -->
+                        <button type="button" class="layout-card" id="layout-4x2-unique" onclick="selectLayout('4x2-unique')">
+                            <div class="layout-diagram diagram-4x2 diagram-4x2-unique">
+                                <span></span><span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                            <div class="layout-card-body">
+                                <strong>4&times;2 Full Grid (8 Unique Tiles)</strong>
+                                <span>8 different photos across 8 tiles (not duplicated)</span>
+                            </div>
+                            <i class="material-icons check-badge">check_circle</i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="material-icons-outlined">wallpaper</i> 2. Choose Template Frame</h2>
+                            <p class="card-subtitle">Filter frames by theme or browse all available designs.</p>
+                        </div>
+                        <div class="collection-filter" role="tablist" aria-label="Template Collection Filter">
+                            <button type="button" class="filter-pill active" data-collection="halloween-2026" onclick="setTemplateCollection('halloween-2026')">
+                                <i class="material-icons-outlined">nights_stay</i>
+                                <span>Halloween 2026</span>
+                            </button>
+                            <button type="button" class="filter-pill" data-collection="christmas" onclick="setTemplateCollection('christmas')">
+                                <i class="material-icons-outlined">ac_unit</i>
+                                <span>Christmas</span>
+                            </button>
+                            <button type="button" class="filter-pill" data-collection="classic-halloween" onclick="setTemplateCollection('classic-halloween')">
+                                <i class="material-icons-outlined">dark_mode</i>
+                                <span>Classic Halloween</span>
+                            </button>
+                            <button type="button" class="filter-pill" data-collection="all" onclick="setTemplateCollection('all')">
+                                <i class="material-icons-outlined">apps</i>
+                                <span>All Frames</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="templates" id="templates-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+
+                    <div class="step-footer-actions">
+                        <button type="button" class="btn-primary btn-lg" onclick="goToStep(2)">
+                            <span>Continue to Camera</span>
+                            <kbd class="kbd-hint">&rarr;</kbd>
+                            <i class="material-icons-outlined">photo_camera</i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== STEP 2: CAMERA & CAPTURE ==================== -->
+            <section class="step-panel" id="step-panel-2">
+                <div class="panel-card">
+                    <div class="card-header camera-header">
+                        <div>
+                            <h2><i class="material-icons-outlined">photo_camera</i> Capture Your Poses</h2>
+                            <p class="card-subtitle" id="camera-step-subtitle">Take your photos and pick your best shots! Press <kbd class="kbd-inline">Space</kbd> to capture or <kbd class="kbd-inline">B</kbd> for Burst.</p>
+                        </div>
+                        <div class="camera-utility-bar">
+                            <label class="toggle-pill" title="Mirror Camera Preview & Capture (Shortcut: M)">
+                                <input type="checkbox" id="mirror-toggle" checked onchange="toggleCameraMirror(this.checked)">
+                                <i class="material-icons-outlined">flip</i>
+                                <span>Mirror</span>
+                                <kbd class="kbd-hint">M</kbd>
+                            </label>
+                            <div class="timer-select-pill" title="Countdown Timer">
+                                <i class="material-icons-outlined">timer</i>
+                                <select id="timer-select" onchange="updateCountdownDuration(this.value)">
+                                    <option value="0">Instant (0s)</option>
+                                    <option value="3" selected>3s Timer</option>
+                                    <option value="5">5s Timer</option>
+                                </select>
+                            </div>
+                            <select id="camera-device-select" class="camera-select" onchange="switchCameraDevice(this.value)" title="Select Camera" style="display: none;"></select>
+                        </div>
+                    </div>
+
+                    <!-- Camera Stage -->
+                    <div class="camera-stage-wrapper">
+                        <div class="camera-container" id="camera-container">
+                            <video id="camera-feed" class="mirrored" autoplay playsinline muted></video>
+                            
+                            <!-- Status Badges inside Camera -->
+                            <div class="camera-hud-top">
+                                <span class="hud-pill" id="hud-captured-badge">
+                                    <i class="material-icons-outlined">collections</i> 0 / 8 Captured
+                                </span>
+                                <span class="hud-pill" id="hud-aspect-badge" title="Camera automatically matches your selected tile aspect ratio">
+                                    <i class="material-icons-outlined">crop_free</i> <span id="hud-aspect-text">Tile Crop: Auto</span>
+                                </span>
+                                <span class="hud-pill hud-pill-accent" id="hud-selected-badge">
+                                    <i class="material-icons-outlined">check_circle</i> 0 / 4 Selected
+                                </span>
+                            </div>
+
+                            <!-- Safe Crop Guide Frame Overlay -->
+                            <div class="camera-crop-guide" id="camera-crop-guide" aria-hidden="true"></div>
+
+                            <!-- Pose Prompt Overlay -->
+                            <div class="camera-pose-prompt" id="camera-pose-prompt">
+                                Ready! Press <strong>Space</strong> or click <strong>Take Photo</strong> to capture.
+                            </div>
+
+                            <!-- In-Camera Countdown Overlay -->
+                            <div class="in-camera-countdown" id="in-camera-countdown">
+                                <div class="countdown-number" id="countdown-number">3</div>
+                                <div class="countdown-subtext" id="countdown-subtext">Get Ready!</div>
+                            </div>
+
+                            <!-- Camera Flash Overlay -->
+                            <div class="camera-flash-overlay" id="camera-flash-overlay"></div>
+                        </div>
+                    </div>
+
+                    <!-- Camera Framing & Cutoff Adjustment Bar -->
+                    <div class="camera-framing-bar">
+                        <div class="framing-bar-header">
+                            <span><i class="material-icons-outlined">crop</i> Camera Capture Framing &amp; Cutoff</span>
+                            <div class="framing-mode-pills">
+                                <button type="button" class="filter-pill active" id="cam-crop-match" onclick="setCameraAspectMode('match')" title="Match camera frame to exact tile aspect ratio (Zero surprise cutoff)">
+                                    <i class="material-icons-outlined">aspect_ratio</i>
+                                    <span>Match Tile Ratio</span>
+                                </button>
+                                <button type="button" class="filter-pill" id="cam-crop-full" onclick="setCameraAspectMode('full')" title="Capture full 16:9 camera sensor area">
+                                    <i class="material-icons-outlined">fullscreen</i>
+                                    <span>Full Sensor (16:9)</span>
+                                </button>
+                                <button type="button" class="btn-text-sm" onclick="resetCameraFraming()" title="Reset Camera Zoom & Offset">
+                                    <i class="material-icons-outlined">restart_alt</i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="framing-sliders-grid">
+                            <div class="framing-slider-item">
+                                <label for="cam-zoom-slider">
+                                    <span><i class="material-icons-outlined">zoom_in</i> Zoom</span>
+                                    <strong id="cam-zoom-val">1.0&times;</strong>
+                                </label>
+                                <input type="range" id="cam-zoom-slider" min="100" max="200" value="100" oninput="updateCameraFraming()">
+                            </div>
+                            <div class="framing-slider-item">
+                                <label for="cam-pan-y-slider">
+                                    <span><i class="material-icons-outlined">swap_vert</i> Vertical Cutoff (Up/Down)</span>
+                                    <strong id="cam-pan-y-val">Center</strong>
+                                </label>
+                                <input type="range" id="cam-pan-y-slider" min="-50" max="50" value="0" oninput="updateCameraFraming()">
+                            </div>
+                            <div class="framing-slider-item">
+                                <label for="cam-pan-x-slider">
+                                    <span><i class="material-icons-outlined">swap_horiz</i> Horizontal Cutoff (Left/Right)</span>
+                                    <strong id="cam-pan-x-val">Center</strong>
+                                </label>
+                                <input type="range" id="cam-pan-x-slider" min="-50" max="50" value="0" oninput="updateCameraFraming()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Primary Camera Controls -->
+                    <div class="controls camera-controls">
+                        <button type="button" class="btn-capture-main" id="btn-take-photo" onclick="triggerSingleCapture()" title="Shortcut: Space or C">
+                            <i class="material-icons">camera_alt</i>
+                            <span>Take Photo</span>
+                            <kbd class="kbd-hint">Space</kbd>
+                        </button>
+
+                        <button type="button" class="btn-burst" id="btn-burst-capture" onclick="startBurstCapture()" title="Automatically capture required poses (Shortcut: B)">
+                            <i class="material-icons">bolt</i>
+                            <span id="btn-burst-label">Auto 4-Pose Burst</span>
+                            <kbd class="kbd-hint">B</kbd>
+                        </button>
+
+                        <button type="button" class="btn-secondary" id="btn-burst-8" onclick="startBurstCapture(8)" title="Capture up to 8 photos automatically">
+                            <i class="material-icons-outlined">burst_mode</i>
+                            <span>Full 8-Burst</span>
+                        </button>
+
+                        <button type="button" class="btn-danger-outline" id="btn-stop-burst" onclick="stopBurstCapture()" style="display: none;" title="Shortcut: Esc">
+                            <i class="material-icons">stop_circle</i>
+                            <span>Stop Burst</span>
+                            <kbd class="kbd-hint">Esc</kbd>
+                        </button>
+                    </div>
+
+                    <!-- Filmstrip of Captured Photos -->
+                    <div class="filmstrip-section">
+                        <div class="filmstrip-header">
+                            <h3>
+                                <i class="material-icons-outlined">collections</i>
+                                Captured Shots <span class="sub-hint">(Click a photo to select/deselect for your frame)</span>
+                            </h3>
+                            <div class="filmstrip-actions">
+                                <button type="button" class="btn-text-sm" onclick="autoSelectRequiredPhotos()">
+                                    <i class="material-icons-outlined">done_all</i>
+                                    <span id="auto-pick-label">Auto-Pick 4</span>
+                                </button>
+                                <button type="button" class="btn-text-sm text-danger" onclick="clearCapturedPhotos()">
+                                    <i class="material-icons-outlined">delete_sweep</i> Clear Photos
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="captured-photos" id="captured-photos">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="step-footer-actions">
+                        <button type="button" class="btn-secondary" onclick="goToStep(1)">
+                            <i class="material-icons-outlined">arrow_back</i>
+                            <span>Change Frame</span>
+                            <kbd class="kbd-hint">&larr;</kbd>
+                        </button>
+                        <button type="button" class="btn-primary btn-lg" onclick="goToStep(3)">
+                            <span>Customize &amp; Style</span>
+                            <kbd class="kbd-hint">&rarr;</kbd>
+                            <i class="material-icons-outlined">tune</i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== STEP 3: SELECT, FILTER & CUSTOMIZE ==================== -->
+            <section class="step-panel" id="step-panel-3">
+                <div class="panel-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="step3-select-heading"><i class="material-icons-outlined">photo_size_select_large</i> 1. Select &amp; Order Your Photos</h2>
+                            <p class="card-subtitle" id="step3-select-subtitle">Click photos below to toggle selection. Numbers show the exact slot order in your template.</p>
+                        </div>
+                        <div class="selection-counter-pill" id="step3-selection-pill">0 / 4 Selected</div>
+                    </div>
+
+                    <!-- Quick 4x2 Duplication Mode Toggle (visible when 4x2 or 4x2-unique is active) -->
+                    <div class="strip-mode-toggle-bar" id="strip-mode-toggle-bar" style="display: none;">
+                        <span class="strip-mode-label"><i class="material-icons-outlined">view_column</i> 4&times;2 Strip Mode:</span>
+                        <div class="strip-mode-buttons">
+                            <button type="button" class="filter-pill active" id="strip-mode-dup" onclick="selectLayout('4x2')">
+                                <i class="material-icons-outlined">content_copy</i>
+                                <span>Duplicated Side-by-Side (4 Photos)</span>
+                            </button>
+                            <button type="button" class="filter-pill" id="strip-mode-unique" onclick="selectLayout('4x2-unique')">
+                                <i class="material-icons-outlined">grid_on</i>
+                                <span>Not Duplicated / All Unique (8 Photos)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="captured-photos" id="captured-photos-step3">
+                        <!-- Mirror of captured photos for easy selection in Step 3 -->
+                    </div>
+
+                    <!-- Selected Slot Order Reorder Bar -->
+                    <div class="selected-order-bar" id="selected-order-bar">
+                        <!-- Shows Slots with left/right swap buttons -->
+                    </div>
+
+                    <!-- Tile Crop & Cutoff Adjustment Panel -->
+                    <div class="tile-crop-adjuster" id="tile-crop-adjuster">
+                        <div class="framing-bar-header">
+                            <span>
+                                <i class="material-icons-outlined">crop_rotate</i>
+                                Tile Cutoff &amp; Positioning
+                                <small class="sub-hint">(Tip: You can also drag photos directly inside the Live Frame Preview!)</small>
+                            </span>
+                            <div class="framing-mode-pills">
+                                <button type="button" class="filter-pill active" id="tile-fit-cover" onclick="setTileFitMode('cover')" title="Fill entire tile slot">
+                                    <i class="material-icons-outlined">crop_original</i>
+                                    <span>Fill Tile (Cover)</span>
+                                </button>
+                                <button type="button" class="filter-pill" id="tile-fit-contain" onclick="setTileFitMode('contain')" title="Show full photo inside tile without cutting off edges">
+                                    <i class="material-icons-outlined">fit_screen</i>
+                                    <span>Fit Whole Photo (No Cutoff)</span>
+                                </button>
+                                <button type="button" class="btn-text-sm" onclick="resetTileCropAdjustments()" title="Reset all tile crop positions">
+                                    <i class="material-icons-outlined">restart_alt</i> Reset Crop
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tile-target-row">
+                            <label for="tile-crop-target"><i class="material-icons-outlined">tune</i> Adjust Target:</label>
+                            <select id="tile-crop-target" class="camera-select" onchange="onSelectTileCropTarget(this.value)">
+                                <option value="all">All Selected Tiles</option>
+                                <option value="0">Slot 1</option>
+                            </select>
+                        </div>
+
+                        <div class="framing-sliders-grid">
+                            <div class="framing-slider-item">
+                                <label for="tile-zoom-slider">
+                                    <span><i class="material-icons-outlined">zoom_in</i> Tile Zoom</span>
+                                    <strong id="tile-zoom-val">100%</strong>
+                                </label>
+                                <input type="range" id="tile-zoom-slider" min="100" max="220" value="100" oninput="updateTileCropFromSliders()">
+                            </div>
+                            <div class="framing-slider-item">
+                                <label for="tile-pan-y-slider">
+                                    <span><i class="material-icons-outlined">swap_vert</i> Vertical Cutoff (Top/Bottom)</span>
+                                    <strong id="tile-pan-y-val">50%</strong>
+                                </label>
+                                <input type="range" id="tile-pan-y-slider" min="0" max="100" value="50" oninput="updateTileCropFromSliders()">
+                            </div>
+                            <div class="framing-slider-item">
+                                <label for="tile-pan-x-slider">
+                                    <span><i class="material-icons-outlined">swap_horiz</i> Horizontal Cutoff (Left/Right)</span>
+                                    <strong id="tile-pan-x-val">50%</strong>
+                                </label>
+                                <input type="range" id="tile-pan-x-slider" min="0" max="100" value="50" oninput="updateTileCropFromSliders()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Filters & Frame Border Customization -->
+                <div class="panel-card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="material-icons-outlined">auto_fix_high</i> 2. Photo Filters &amp; Frame Borders</h2>
+                            <p class="card-subtitle">Enhance your photos with studio filters and customize tile borders.</p>
+                        </div>
+                    </div>
+
+                    <!-- Photo Filter Selector (Icons instead of Emojis) -->
+                    <div class="custom-group">
+                        <label class="group-label">Photo Filter Effect:</label>
+                        <div class="filter-presets-row" id="filter-presets-row">
+                            <button type="button" class="filter-chip active" data-filter="none" onclick="selectPhotoFilter('none')">
+                                <i class="material-icons-outlined">auto_awesome</i>
+                                <span>Natural</span>
+                            </button>
+                            <button type="button" class="filter-chip" data-filter="vivid" onclick="selectPhotoFilter('vivid')">
+                                <i class="material-icons-outlined">wb_sunny</i>
+                                <span>Vivid Pop</span>
+                            </button>
+                            <button type="button" class="filter-chip" data-filter="warm" onclick="selectPhotoFilter('warm')">
+                                <i class="material-icons-outlined">flare</i>
+                                <span>Warm Glow</span>
+                            </button>
+                            <button type="button" class="filter-chip" data-filter="bw" onclick="selectPhotoFilter('bw')">
+                                <i class="material-icons-outlined">contrast</i>
+                                <span>Classic B&amp;W</span>
+                            </button>
+                            <button type="button" class="filter-chip" data-filter="vintage" onclick="selectPhotoFilter('vintage')">
+                                <i class="material-icons-outlined">filter_vintage</i>
+                                <span>Retro Sepia</span>
+                            </button>
+                            <button type="button" class="filter-chip" data-filter="spooky" onclick="selectPhotoFilter('spooky')">
+                                <i class="material-icons-outlined">tonality</i>
+                                <span>Spooky Contrast</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Border Color Selector -->
+                    <div class="border-selector" id="border-selector">
+                        <label class="group-label">Photo Tile Border Color:</label>
+                        <div class="border-colors">
+                            <div class="border-color-option selected" data-color="none" onclick="selectBorderColor('none')" title="No Border">
+                                <i class="material-icons no-border-icon">block</i>
+                            </div>
+                            <div class="border-color-option" data-color="#ffffff" onclick="selectBorderColor('#ffffff')" style="background-color: #ffffff;" title="White"></div>
+                            <div class="border-color-option" data-color="#000000" onclick="selectBorderColor('#000000')" style="background-color: #000000;" title="Black"></div>
+                            <div class="border-color-option" data-color="#FFD700" onclick="selectBorderColor('#FFD700')" style="background-color: #FFD700;" title="Gold"></div>
+                            <div class="border-color-option" data-color="#ff6b00" onclick="selectBorderColor('#ff6b00')" style="background-color: #ff6b00;" title="Halloween Orange"></div>
+                            <div class="border-color-option" data-color="#C0C0C0" onclick="selectBorderColor('#C0C0C0')" style="background-color: #C0C0C0;" title="Silver"></div>
+                            <div class="border-color-option" data-color="#d62828" onclick="selectBorderColor('#d62828')" style="background-color: #d62828;" title="Crimson Red"></div>
+                            <div class="border-color-option" data-color="#2a9d8f" onclick="selectBorderColor('#2a9d8f')" style="background-color: #2a9d8f;" title="Emerald Green"></div>
+                            <div class="border-color-option" data-color="#3a86ff" onclick="selectBorderColor('#3a86ff')" style="background-color: #3a86ff;" title="Royal Blue"></div>
+                            <div class="border-color-option" data-color="#ff69b4" onclick="selectBorderColor('#ff69b4')" style="background-color: #ff69b4;" title="Hot Pink"></div>
+                            <div class="border-color-option" data-color="#8338ec" onclick="selectBorderColor('#8338ec')" style="background-color: #8338ec;" title="Vivid Purple"></div>
+                        </div>
+
+                        <!-- Border width slider -->
+                        <div class="border-width-control" id="border-width-control" style="display: none;">
+                            <label for="border-width-slider">Border Thickness: <span id="border-width-value">4</span>px</label>
+                            <div class="slider-container">
+                                <span class="slider-label">Thin</span>
+                                <input type="range" id="border-width-slider" min="1" max="20" value="4" oninput="updateBorderWidth(this.value)">
+                                <span class="slider-label">Thick</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-footer-actions">
+                        <button type="button" class="btn-secondary" onclick="goToStep(2)">
+                            <i class="material-icons-outlined">arrow_back</i>
+                            <span>Back to Camera</span>
+                            <kbd class="kbd-hint">&larr;</kbd>
+                        </button>
+                        <button type="button" class="btn-primary btn-lg" onclick="goToStep(4)">
+                            <span>Review &amp; Download</span>
+                            <kbd class="kbd-hint">&rarr;</kbd>
+                            <i class="material-icons-outlined">download</i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== STEP 4: FINAL PREVIEW & EXPORT ==================== -->
+            <section class="step-panel" id="step-panel-4">
+                <div class="panel-card export-card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="material-icons-outlined">celebration</i> Ready to Download &amp; Share!</h2>
+                            <p class="card-subtitle">Tag your guest name below for a personalized filename and save your high-resolution photo strip.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Guest Name Tagging Before Export -->
+                    <div class="export-guest-row">
+                        <div class="input-group">
+                            <label for="export-guest-input"><i class="material-icons-outlined">badge</i> Visitor / Group Name (for file &amp; gallery):</label>
+                            <input type="text" id="export-guest-input" placeholder="e.g. Team Innovamed, Maria & Friends..." oninput="syncGuestName(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Primary Export & Action Buttons -->
+                    <div class="export-actions-grid">
+                        <button type="button" class="btn-export-hero" onclick="exportImage()" title="Shortcut: E or Enter">
+                            <i class="material-icons">download</i>
+                            <div class="btn-hero-text">
+                                <strong>Download High-Res PNG</strong>
+                                <span>Full 1080&times;1080 Studio Quality (Press E)</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="btn-secondary btn-lg" onclick="printTemplate()" title="Shortcut: P">
+                            <i class="material-icons-outlined">print</i>
+                            <span>Print Photo Strip</span>
+                            <kbd class="kbd-hint">P</kbd>
+                        </button>
+
+                        <button type="button" class="btn-accent-outline btn-lg" onclick="startNewGuestSession()">
+                            <i class="material-icons-outlined">person_add</i>
+                            <span>Next Visitor / New Session</span>
+                        </button>
+                    </div>
+
+                    <div class="step-footer-actions">
+                        <button type="button" class="btn-secondary" onclick="goToStep(3)">
+                            <i class="material-icons-outlined">arrow_back</i>
+                            <span>Back to Customize</span>
+                            <kbd class="kbd-hint">&larr;</kbd>
+                        </button>
+                        <button type="button" class="btn-danger-outline" onclick="resetAll()" title="Shortcut: R">
+                            <i class="material-icons-outlined">refresh</i>
+                            <span>Reset Everything</span>
+                            <kbd class="kbd-hint">R</kbd>
+                        </button>
+                    </div>
+                </div>
+            </section>
         </div>
 
-        <h3>Choose Template:</h3>
-        <div class="templates" id="templates-container">
-            <!-- Templates will be populated dynamically based on layout -->
+        <!-- Right / Sticky Live Preview Sidebar -->
+        <aside class="studio-preview-col">
+            <div class="preview-sticky-card">
+                <div class="preview-card-header">
+                    <div class="preview-title-group">
+                        <i class="material-icons-outlined">visibility</i>
+                        <h3>Live Frame Preview</h3>
+                    </div>
+                    <span class="preview-status-chip" id="preview-status-chip">Select 4 Photos</span>
+                </div>
+
+                <!-- Scalable Wrapper for the 1080x1080 Final Template -->
+                <div class="final-template-stage" id="final-template-stage">
+                    <div class="final-template" id="final-template">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Quick Bottom Actions inside Sticky Preview -->
+                <div class="preview-card-footer">
+                    <button type="button" class="btn-primary btn-block" id="sidebar-export-btn" onclick="exportImage()" title="Shortcut: E">
+                        <i class="material-icons-outlined">download</i>
+                        <span>Export Image</span>
+                        <kbd class="kbd-hint">E</kbd>
+                    </button>
+                    <button type="button" class="btn-secondary btn-icon-only" onclick="printTemplate()" title="Print (Shortcut: P)">
+                        <i class="material-icons-outlined">print</i>
+                    </button>
+                    <button type="button" class="btn-secondary btn-icon-only" onclick="resetAll()" title="Reset All (Shortcut: R)">
+                        <i class="material-icons-outlined">refresh</i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>Developed by <a href="https://www.innovamedindustries.com" target="_blank" rel="noopener">Innovamed Industries &mdash; @DevBenj</a> &bull; Photo Booth Studio</p>
+    </footer>
+
+    <!-- Recent Guests / Session History Drawer -->
+    <div class="drawer-backdrop" id="history-drawer-backdrop" onclick="toggleHistoryDrawer(false)"></div>
+    <aside class="history-drawer" id="history-drawer" aria-label="Recent Guest Sessions">
+        <div class="drawer-header">
+            <div>
+                <h3><i class="material-icons-outlined">history</i> Recent Visitor Strips</h3>
+                <p>Saved during this browser session</p>
+            </div>
+            <button type="button" class="icon-close-btn" onclick="toggleHistoryDrawer(false)">
+                <i class="material-icons">close</i>
+            </button>
         </div>
+        <div class="drawer-body" id="history-drawer-list">
+            <!-- Populated dynamically -->
+        </div>
+        <div class="drawer-footer">
+            <button type="button" class="btn-danger-outline btn-sm btn-block" onclick="clearSessionHistory()">
+                <i class="material-icons-outlined">delete_outline</i> Clear Session History
+            </button>
+        </div>
+    </aside>
 
-        <h3>Captured Photos:</h3>
-        <div class="captured-photos" id="captured-photos"></div>
-
-        <div class="final-template"></div>
+    <!-- Visitor / Guest Check-In Modal -->
+    <div class="custom-modal-backdrop" id="guest-modal-backdrop" style="display: none;">
+        <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="guest-modal-title">
+            <div class="custom-modal-header">
+                <h3 id="guest-modal-title"><i class="material-icons-outlined">badge</i> Welcome, Visitor!</h3>
+                <button type="button" class="icon-close-btn" onclick="closeGuestModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="custom-modal-body">
+                <p>Enter your name, nickname, or group name so your downloaded photos are tagged just for you:</p>
+                <div class="modal-field">
+                    <label for="modal-guest-name-input">Visitor / Group Name</label>
+                    <input type="text" id="modal-guest-name-input" placeholder="e.g. Team Alliance, Dr. Reyes, Guest..." maxlength="40">
+                </div>
+                <div class="quick-guest-tags">
+                    <span>Quick tags:</span>
+                    <button type="button" class="tag-chip" onclick="setQuickGuestTag('Innovamed Team')">Innovamed Team</button>
+                    <button type="button" class="tag-chip" onclick="setQuickGuestTag('Alliance Care')">Alliance Care</button>
+                    <button type="button" class="tag-chip" onclick="setQuickGuestTag('VIP Guest')">VIP Guest</button>
+                    <button type="button" class="tag-chip" onclick="setQuickGuestTag('Spooky Squad')">Spooky Squad</button>
+                    <button type="button" class="tag-chip" onclick="setQuickGuestTag('Holiday Crew')">Holiday Crew</button>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeGuestModal()">Skip</button>
+                <button type="button" class="btn-primary" onclick="saveGuestModal()">Save Visitor Name</button>
+            </div>
+        </div>
     </div>
 
-    <div class="controls">
-        <button class="mdc-button mdc-button--raised" onclick="exportImage()">
-            <span class="mdc-button__ripple"></span>
-            <i class="material-icons mdc-button__icon">download</i>
-            <span class="mdc-button__label">Export Image</span>
-        </button>
-
-        <button class="mdc-button mdc-button--outlined" onclick="resetAll()">
-            <span class="mdc-button__ripple"></span>
-            <i class="material-icons mdc-button__icon">refresh</i>
-            <span class="mdc-button__label">Reset</span>
-        </button>
-    </div>
-
-    <div class="controls">
-        <p>Developed by: <a href="https://www.innovamedindustries.com" target="_blank">Innovamed - @DevBenj</a></p>
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="custom-modal-backdrop" id="shortcuts-modal-backdrop" style="display: none;" onclick="if(event.target===this)closeShortcutsModal()">
+        <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="shortcuts-modal-title">
+            <div class="custom-modal-header">
+                <h3 id="shortcuts-modal-title"><i class="material-icons-outlined">keyboard</i> Keyboard Shortcuts</h3>
+                <button type="button" class="icon-close-btn" onclick="closeShortcutsModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="custom-modal-body">
+                <div class="shortcuts-list">
+                    <div class="shortcut-row">
+                        <span>Take Photo / Capture</span>
+                        <div><kbd>Space</kbd> or <kbd>C</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Start / Stop Auto Burst</span>
+                        <div><kbd>B</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Next Step</span>
+                        <div><kbd>&rarr;</kbd> or <kbd>N</kbd> or <kbd>Enter</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Previous Step</span>
+                        <div><kbd>&larr;</kbd> or <kbd>Backspace</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Jump to Step 1 – 4</span>
+                        <div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Toggle Camera Mirror</span>
+                        <div><kbd>M</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Export / Download PNG</span>
+                        <div><kbd>E</kbd> or <kbd>D</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Print Photo Strip</span>
+                        <div><kbd>P</kbd></div>
+                    </div>
+                    <div class="shortcut-row">
+                        <span>Reset All</span>
+                        <div><kbd>R</kbd></div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-primary" onclick="closeShortcutsModal()">Got It</button>
+            </div>
+        </div>
     </div>
 
     <!-- Snackbar for notifications -->
